@@ -1,0 +1,12 @@
+from langchain_core.tools import tool
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.vectorstores import Chroma
+
+@tool
+def lookup_airline_policy(query: str):
+    """Search the Swiss Airline Policy database for information on flight rules and cancellations."""
+    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+    vector_db = Chroma(persist_directory="data/airline_policy_vectordb", embedding_function=embeddings)
+    
+    docs = vector_db.similarity_search(query, k=3)
+    return "\n\n".join([doc.page_content for doc in docs])
